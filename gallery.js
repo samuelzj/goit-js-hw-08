@@ -1,80 +1,115 @@
 const images = [
     {
-      preview:
-        'https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820__480.jpg',
-      original:
-        'https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820_1280.jpg',
-      description: 'Hokkaido Flower',
+        preview:
+            "https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820__480.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2019/05/14/16/43/rchids-4202820_1280.jpg",
+        description: "Hokkaido Flower",
     },
     {
-      preview:
-        'https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677__340.jpg',
-      original:
-        'https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677_1280.jpg',
-      description: 'Container Haulage Freight',
+        preview:
+            "https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677_1280.jpg",
+        description: "Container Haulage Freight",
     },
-    // Pozostałe obiekty obrazów...
-  ];
+    {
+        preview:
+            "https://cdn.pixabay.com/photo/2019/05/16/09/47/beach-4206785__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2019/05/16/09/47/beach-4206785_1280.jpg",
+        description: "Aerial Beach View",
+    },
+    {
+        preview:
+            "https://cdn.pixabay.com/photo/2016/11/18/16/19/flowers-1835619__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2016/11/18/16/19/flowers-1835619_1280.jpg",
+        description: "Flower Blooms",
+    },
+    {
+        preview:
+            "https://cdn.pixabay.com/photo/2018/09/13/10/36/mountains-3674334__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2018/09/13/10/36/mountains-3674334_1280.jpg",
+        description: "Alpine Mountains",
+    },
+    {
+        preview:
+            "https://cdn.pixabay.com/photo/2019/05/16/23/04/landscape-4208571__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2019/05/16/23/04/landscape-4208571_1280.jpg",
+        description: "Mountain Lake Sailing",
+    },
+    {
+        preview:
+            "https://cdn.pixabay.com/photo/2019/05/17/09/27/the-alps-4209272__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2019/05/17/09/27/the-alps-4209272_1280.jpg",
+        description: "Alpine Spring Meadows",
+    },
+    {
+        preview:
+            "https://cdn.pixabay.com/photo/2019/05/16/21/10/landscape-4208255__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2019/05/16/21/10/landscape-4208255_1280.jpg",
+        description: "Nature Landscape",
+    },
+    {
+        preview:
+            "https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843__340.jpg",
+        original:
+            "https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843_1280.jpg",
+        description: "Lighthouse Coast Sea",
+    },
+];
 
-    const gallery = document.querySelector(".gallery")
-    const galleryLink = document.querySelector(".gallery-link")
-    const galleryImages = document.querySelector(".gallery-image")
+const gallery = document.querySelector("ul.gallery");
 
+const markup = images
+    .map(
+        ({ preview, original, description }) => `<li class="gallery-item">
+  <a class="gallery-link" href="${original}">
+    <img
+      class="gallery-image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</li>`
+    )
+    .join("");
 
+gallery.innerHTML = markup;
 
-    const galleryImage = images.map(
-    ({ preview, original, description }) => 
-    `<li class="gallery-item">
-      <a class="gallery-link" href="${original}" >
-        <img class="gallery-image" src="${preview}" data-source="${original}" alt="${description}" width="360px" height="200px" />
-      </a>
-    </li>`
-  ).join('');
+const instance = basicLightbox.create(`<img width="800" height="600">`, {
+    onShow: () => {
+        document.addEventListener("keydown", onEscClick);
+    },
+    onClose: () => {
+        document.removeEventListener("keydown", onEscClick);
+    },
+});
+const imgLightbox = instance.element().querySelector("img");
 
-  gallery.insertAdjacentHTML('beforeend', galleryImage);
+gallery.addEventListener("click", onGalleryClick);
 
-  gallery.addEventListener('click', openModalLightbox)
+function onGalleryClick(event) {
+    const currentImage = event.target;
+    event.preventDefault();
 
-  function openModalLightbox(e) {
-    e.preventDefault();
-    const imageBig = e.target.dataset.source
-    const html = `<img src="${imageBig}" width="800" height="600">`
-    const instance = basicLightbox.create(html, {
-      onShow: (instance) => {
-        document.onkeydown = function(evt) {
-          evt = evt || window.evt;
-          var isEscape = false;
-          if ( "key" in evt ) {
-            isEscape = ( evt.key === "Escape" || evt.key === "Esc" );
-          } else {
-            isEscape = ( evt.keyCode === 27 );
-          }
-          if ( isEscape ) {
-            instance.close();
-          }
-        };
-      },
-      onClose: (instance) => {}
-    })
-    instance.show()
-  }
+    if (currentImage.tagName !== "IMG") {
+        return;
+    }
 
-// function closeModal(event) {
-//   if(event.keyCode === 27) {
-//     if(document.querySelector(".basicLightbox").classList.contains("basicLightbox--visible")) {
-//       document.querySelector(".basicLightbox").classList.remove("basicLightbox")
-//     }
-//   }
+    imgLightbox.src = `${currentImage.dataset.source}`;
 
-//   function deletingDivEl () {
-//     if(document.querySelector(".basicLightbox").classList.contains("basicLightbox--img")) {
-//       document.querySelector("div.basicLightbox").remove()
-//     }
-//   }
+    instance.show();
+}
 
-//   setInterval(deletingDivEl, 5000);
-// }
-
-
-
-  
+function onEscClick(event) {
+    if (event.code === "Escape") {
+        instance.close();
+    }
+}
